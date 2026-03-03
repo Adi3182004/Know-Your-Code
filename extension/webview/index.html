@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'none';
+        style-src {{cspSource}} 'unsafe-inline';
+        script-src {{cspSource}} 'unsafe-inline';
+        connect-src http://127.0.0.1:*;
+        img-src https:;
+      "
+    />
+
+    <link rel="stylesheet" href="{{webviewUri}}/style.css" />
+    <title>>Know Your Code - by Adi3182004</title>
+  </head>
+
+  <body>
+    <!-- 🚀 STARTUP LOADER -->
+    <div id="startupLoader" class="startupOverlay">
+      <div class="loader-wrapper">
+        <span class="loader-letter" style="--i: 1">K</span>
+        <span class="loader-letter" style="--i: 2">n</span>
+        <span class="loader-letter" style="--i: 3">o</span>
+        <span class="loader-letter" style="--i: 4">w</span>
+        <span class="loader-letter" style="--i: 5">&nbsp;</span>
+        <span class="loader-letter" style="--i: 6">Y</span>
+        <span class="loader-letter" style="--i: 7">o</span>
+        <span class="loader-letter" style="--i: 8">u</span>
+        <span class="loader-letter" style="--i: 9">r</span>
+        <span class="loader-letter" style="--i: 10">&nbsp;</span>
+        <span class="loader-letter" style="--i: 11">C</span>
+        <span class="loader-letter" style="--i: 12">o</span>
+        <span class="loader-letter" style="--i: 13">d</span>
+        <span class="loader-letter" style="--i: 14">e</span>
+
+        <div class="startup-bar"></div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="header">
+        <img
+          class="logo"
+          src="https://image2url.com/r2/default/images/1772434644276-dc7ab388-5e42-4742-8f9d-ca835cc62f06.jpeg"
+        />
+        Know Your Code
+      </div>
+
+      <div id="chat"></div>
+
+      <div class="inputBox">
+        <input id="question" placeholder="Ask about your codebase..." />
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
+
+    <script>
+      window.KYC_BACKEND_PORT = "{{backendPort}}";
+    </script>
+
+    <script src="{{webviewUri}}/script.js"></script>
+  </body>
+</html>

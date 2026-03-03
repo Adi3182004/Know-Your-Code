@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+sentence-transformers
+faiss-cpu
+python-multipart
+gitpython
+requests
+tree-sitter
+tree-sitter-languages
+tree_sitter_javascript
+GitPython

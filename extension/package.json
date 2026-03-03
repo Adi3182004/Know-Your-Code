@@ -1,0 +1,42 @@
+{
+  "name": "know-your-code",
+  "displayName": "Know Your Code - by Aditya Andhalkar",
+  "description": "AI-powered codebase intelligence and surgical restore engine",
+  "version": "0.3.0",
+  "publisher": "Adi3182004",
+  "icon": "images/astrick.jpeg",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "main": "./extension.js",
+  "activationEvents": [
+    "onCommand:knowyourcode.openChat"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "knowyourcode.openChat",
+        "title": "Know Your Code: Open Chat"
+      }
+    ]
+  },
+  "scripts": {
+    "test": "echo \"No tests\""
+  },
+  "keywords": [
+    "ai",
+    "code",
+    "analysis",
+    "git",
+    "intelligence"
+  ],
+  "author": "Adi3182004",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/vscode": "^1.80.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Adi3182004/know-your-code"
+  }
+}
