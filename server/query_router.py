@@ -1,77 +1,119 @@
-from sentence_transformers import SentenceTransformer
 import re
+from sentence_transformers import SentenceTransformer
+from sentence_transformers.util import cos_sim
+
+MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 
 
 class QueryRouter:
+
     def __init__(self):
-        self.model = SentenceTransformer("all-MiniLM-L6-v2")
-        
+
         self.intent_keywords = {
-            "search": [
-                "find", "where", "what", "how", "show", "get", "list",
-                "tell me", "look for", "search for", "locate"
+
+            "modify": [
+                "change",
+                "modify",
+                "update",
+                "edit",
+                "replace",
+                "increase",
+                "decrease",
+                "set interval",
+                "set value",
+                "fix code"
             ],
+
             "explain": [
-                "explain", "describe", "what does", "how does", "what is",
-                "clarify", "understand", "what happens", "step through"
+                "explain",
+                "describe",
+                "what does",
+                "how does",
+                "clarify"
             ],
+
             "impact": [
-                "impact", "affected", "dependency", "depends on", "uses",
-                "called by", "calls", "references", "who uses", "where is used"
+                "impact",
+                "affected",
+                "dependency",
+                "depends on",
+                "who uses",
+                "where is used"
             ],
+
             "architecture": [
-                "architecture", "structure", "overview", "design", "pattern",
-                "organization", "modules", "components", "how organized"
+                "architecture",
+                "structure",
+                "design",
+                "modules",
+                "components",
+                "overview"
             ],
-            "history": [
-                "history", "changed", "when", "who changed", "blame",
-                "author", "commit", "git", "version", "evolution"
-            ],
+
             "history_author": [
-                "who", "author", "blame", "authored", "wrote", "created",
-                "written by", "modified by"
+                "who modified",
+                "who wrote",
+                "who created",
+                "blame",
+                "author"
             ],
+
             "history_change": [
-                "changed", "diff", "commit", "version", "when changed",
-                "what changed", "evolution"
+                "what changed",
+                "show diff",
+                "commit history",
+                "version history",
+                "repository history"
             ],
+
             "revert": [
-                "revert", "restore", "undo", "previous", "old version",
-                "earlier version", "rollback", "go back"
+                "revert",
+                "restore",
+                "rollback",
+                "undo",
+                "previous version"
             ]
         }
 
-    def classify(self, question: str) -> str:
-        """
-        Classify the question intent using keyword matching and embeddings.
-        """
+        self.intents = list(self.intent_keywords.keys())
+        self.intent_embeddings = MODEL.encode(self.intents, convert_to_tensor=True)
+
+    def classify(self, question: str):
+
         question_lower = question.lower()
 
-        # =====================================================
-        # KEYWORD-BASED FAST PATH
-        # =====================================================
+        if "who modified" in question_lower or "blame" in question_lower:
+            return "history_author"
+
+        if "what changed" in question_lower or "show diff" in question_lower:
+            return "history_change"
+
+        if "restore" in question_lower or "revert" in question_lower:
+            return "revert"
+
+        if (
+            "change" in question_lower
+            or "modify" in question_lower
+            or "update" in question_lower
+            or "edit" in question_lower
+            or "increase" in question_lower
+            or "decrease" in question_lower
+        ):
+            return "modify"
+
         for intent, keywords in self.intent_keywords.items():
             for keyword in keywords:
                 if keyword in question_lower:
                     return intent
 
-        # =====================================================
-        # FALLBACK: EMBEDDING-BASED CLASSIFICATION
-        # =====================================================
-        intent_labels = list(self.intent_keywords.keys())
-        intent_embeddings = self.model.encode(intent_labels, convert_to_tensor=True)
+        question_embedding = MODEL.encode(question, convert_to_tensor=True)
 
-        question_embedding = self.model.encode(question, convert_to_tensor=True)
+        scores = cos_sim(question_embedding, self.intent_embeddings)[0]
 
-        from sentence_transformers.util import cos_sim
+        best_idx = scores.argmax().item()
+        best_score = scores[best_idx].item()
 
-        similarities = cos_sim(question_embedding, intent_embeddings)[0]
-
-        best_idx = similarities.argmax().item()
-        best_intent = intent_labels[best_idx]
-        best_score = similarities[best_idx].item()
-
-        if best_score > 0.5:
-            return best_intent
+        if best_score > 0.55:
+            return self.intents[best_idx]
 
         return "search"
